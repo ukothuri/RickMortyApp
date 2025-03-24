@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -27,10 +29,22 @@ fun CharacterListScreen(
     onItemClick: (Character) -> Unit = {}
 ) {
     val characters by viewModel.characters.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
-    LazyColumn {
-        items(characters) { character ->
-            CharacterItem(character = character, onClick = { onItemClick(character) })
+    // ✅ Trigger once when Composable is first launched
+    LaunchedEffect(Unit) {
+        viewModel.fetchCharacters()
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        } else {
+            LazyColumn {
+                items(characters) { character ->
+                    CharacterItem(character = character, onClick = { onItemClick(character) })
+                }
+            }
         }
     }
 }

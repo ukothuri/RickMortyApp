@@ -14,17 +14,27 @@ import javax.inject.Inject
 class CharacterViewModel @Inject constructor(
     private val repository: CharacterRepository
 ) : ViewModel() {
-
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
     private val _characters = MutableStateFlow<List<Character>>(emptyList())
     val characters: StateFlow<List<Character>> = _characters
 
-    init {
+    fun fetchCharacters() {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
-                _characters.value = repository.fetchCharacters()
+                val result = repository.fetchCharacters()
+                _characters.value = result
             } catch (e: Exception) {
                 e.printStackTrace()
+            } finally {
+                _isLoading.value = false
             }
         }
     }
+
+    //Not needed as we are using lauch effect in fetchCharacters()
+//    init {
+//        fetchCharacters() // 🔁 Initial fetch
+//    }
 }
