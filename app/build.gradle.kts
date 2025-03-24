@@ -50,7 +50,7 @@ dependencies {
     // Lifecycle + ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     // Jetpack Compose
     implementation(libs.androidx.activity.compose)
     implementation(libs.ui)
