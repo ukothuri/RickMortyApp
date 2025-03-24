@@ -15,23 +15,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.rickmortyapp.data.model.Character
 import com.example.rickmortyapp.viewmodel.CharacterViewModel
 
+
 @Composable
 fun CharacterListScreen(
-    viewModel: CharacterViewModel,
-    onItemClick: (Character) -> Unit
+    viewModel: CharacterViewModel = hiltViewModel(),
+    onItemClick: (Character) -> Unit = {}
 ) {
     val characters by viewModel.characters.collectAsState()
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn {
         items(characters) { character ->
             CharacterItem(character = character, onClick = { onItemClick(character) })
         }
     }
 }
+
 
 @Composable
 fun CharacterItem(character: Character, onClick: () -> Unit) {

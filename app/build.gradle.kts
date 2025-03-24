@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
+
     id("org.jetbrains.kotlin.kapt")
 }
 
@@ -42,6 +43,9 @@ android {
     buildFeatures {
         compose = true
     }
+    hilt {
+        enableAggregatingTask = false
+    }
 }
 
 dependencies {
@@ -68,9 +72,10 @@ dependencies {
     implementation(libs.androidx.core.ktx)
 // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.androidx.appcompat)
     kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
-
+    implementation(libs.material)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
