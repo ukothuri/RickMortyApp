@@ -27,7 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.rickmortyapp.data.model.Character
 import com.example.rickmortyapp.navigation.AppNavGraph
-import com.example.rickmortyapp.repository.CharacterRepositoryImpl
+import com.example.rickmortyapp.data.repository.CharacterRepositoryImpl
 import com.example.rickmortyapp.ui.theme.RickMortyAppTheme
 import com.example.rickmortyapp.viewmodel.CharacterViewModel
 

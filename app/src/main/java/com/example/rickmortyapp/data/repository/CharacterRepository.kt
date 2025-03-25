@@ -1,4 +1,4 @@
-package com.example.rickmortyapp.repository
+package com.example.rickmortyapp.data.repository
 import com.example.rickmortyapp.data.model.Character
 
 interface CharacterRepository {

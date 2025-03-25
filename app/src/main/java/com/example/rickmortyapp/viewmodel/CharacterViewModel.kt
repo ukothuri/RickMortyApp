@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.rickmortyapp.data.model.Character
 import com.example.rickmortyapp.data.model.CharacterUiState
-import com.example.rickmortyapp.repository.CharacterRepository
+import com.example.rickmortyapp.data.repository.CharacterRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

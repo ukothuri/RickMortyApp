@@ -13,14 +13,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.example.rickmortyapp.data.model.Character
 import com.example.rickmortyapp.data.model.CharacterUiState
-import com.example.rickmortyapp.viewmodel.CharacterViewModel
+import com.example.rickmortyapp.data.repository.MockCharacterRepositoryImpl
+import com.example.rickmortyapp
+    .viewmodel.CharacterViewModel
 
 @Composable
 fun CharacterListScreen(
@@ -66,3 +70,17 @@ fun CharacterItem(character: Character, onClick: () -> Unit) {
         Text(text = character.name, style = MaterialTheme.typography.titleMedium)
     }
 }
+
+@Preview
+@Composable
+fun CharacterListPreview() {
+    val fakeRepo = MockCharacterRepositoryImpl()
+    val viewModel = remember { CharacterViewModel(fakeRepo) }
+
+    CharacterListScreen(
+        viewModel = viewModel,
+        onItemClick = {}
+    )
+}
+
+
