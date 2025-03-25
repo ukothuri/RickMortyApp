@@ -89,17 +89,16 @@ fun CharacterListPreview() {
 
 ## 📌 To Do
 
-- [ ] Add real API integration with Retrofit
+
 - [ ] Add pagination with Paging 3
 - [ ] Add navigation animations
 - [ ] Add empty state / error retry support
-- [ ] Add unit tests for ViewModel
 
----
+---[CharacterViewModelTest.kt](../../Downloads/CharacterViewModelTest.kt)
 
 ## 🧑‍💻 Author
 
-Umamaheswara Rao Kothuri  
+Mahesh Kothuri  
 (Android Developer, Clean Architecture Enthusiast)
 
 ---
