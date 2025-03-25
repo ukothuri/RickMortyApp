@@ -2,10 +2,21 @@ package com.example.rickmortyapp.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,6 +35,7 @@ import com.example.rickmortyapp.data.model.Character
 import com.example.rickmortyapp.data.model.CharacterUiState
 import com.example.rickmortyapp.data.repository.MockCharacterRepositoryImpl
 import com.example.rickmortyapp.viewmodel.CharacterViewModel
+import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun CharacterListScreen(
@@ -32,19 +44,33 @@ fun CharacterListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchCharacters()
-    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         when (val state = uiState) {
             is CharacterUiState.Loading -> CircularProgressIndicator()
-            is CharacterUiState.Success -> LazyColumn {
-                items(state.characters) { character ->
-                    CharacterItem(character = character, onClick = { onItemClick(character) })
+            is CharacterUiState.Success -> {
+                val characters = (uiState as CharacterUiState.Success).characters
+                LazyColumn {
+                    items(characters) { character ->
+                        CharacterItem(character = character) {
+                            onItemClick(character)
+                        }
+                    }
                 }
             }
-            is CharacterUiState.Error -> Text("Error: ${state.message}")
+            is CharacterUiState.Error -> {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text("Oops! ${state.message}")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(onClick = { viewModel.retry() }) {
+                        Text("Retry")
+                    }
+                }
+            }
         }
     }
 }
@@ -70,11 +96,24 @@ fun CharacterItem(character: Character, onClick: () -> Unit) {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun CharacterListPreview() {
+    // Using a fake/mock repository for preview
     val fakeRepo = MockCharacterRepositoryImpl()
-    val viewModel = remember { CharacterViewModel(fakeRepo) }
+
+    // Using Unconfined dispatcher for preview (safe for Compose previews)
+    val viewModel = remember {
+        CharacterViewModel(
+            repository = fakeRepo,
+            dispatcher = Dispatchers.Unconfined
+        )
+    }
+
+    // You might want to trigger retry() to populate initial state for preview
+    LaunchedEffect(Unit) {
+        viewModel.retry()
+    }
 
     CharacterListScreen(
         viewModel = viewModel,

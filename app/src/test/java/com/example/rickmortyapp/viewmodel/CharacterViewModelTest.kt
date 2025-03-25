@@ -29,27 +29,36 @@ class CharacterViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        testRepository = object : CharacterRepository {
-            override suspend fun fetchCharacters() = testCharacters
-        }
-        viewModel = CharacterViewModel(testRepository,testDispatcher)
+        viewModel = CharacterViewModel(
+            repository = object : CharacterRepository {
+                override suspend fun fetchCharacters(): List<Character> = testCharacters
+            },
+            dispatcher = testDispatcher // 👈 make sure this matches
+        )
     }
 
+
     @Test
-    fun `fetchCharacters should emit loading and then success state`() = runTest {
-        viewModel.fetchCharacters()
+    fun `retry should emit loading and then success state`() = runTest {
+        viewModel.retry() // Trigger the data load
 
         viewModel.uiState.test {
             val loading = awaitItem()
+            println("🌀 Loading emitted: $loading")
             assert(loading is CharacterUiState.Loading)
 
             testDispatcher.scheduler.advanceUntilIdle()
 
             val success = awaitItem()
+            println("✅ Success emitted: $success")
             assert(success is CharacterUiState.Success)
             assertEquals(testCharacters, (success as CharacterUiState.Success).characters)
+
+            cancelAndIgnoreRemainingEvents()
         }
     }
+
+
 
 
     @Test
