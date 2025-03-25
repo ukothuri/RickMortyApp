@@ -17,15 +17,17 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.rickmortyapp.data.model.Character
 import com.example.rickmortyapp.ui.CharacterListScreen
@@ -37,32 +39,45 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             RickMortyAppTheme {
+                val navController = rememberNavController()
                 val viewModel: CharacterViewModel = viewModel()
-                var showCharacters by remember { mutableStateOf(false) }
-                var selectedCharacter by remember { mutableStateOf<Character?>(null) }
 
-                when {
-                    selectedCharacter != null -> {
-                        CharacterDetailScreen(
-                            character = selectedCharacter!!,
-                            onBack = { selectedCharacter = null }
+                NavHost(
+                    navController = navController,
+                    startDestination = "home"
+                ) {
+                    composable("home") {
+                        HomeScreen(
+                            onShowCharacters = {
+                                navController.navigate("list")
+                            }
                         )
                     }
-                    showCharacters -> {
+
+                    composable("list") {
                         CharacterListScreen(
                             viewModel = viewModel,
-                            onItemClick = { character -> selectedCharacter = character }
+                            onItemClick = { character ->
+                                viewModel.selectCharacter(character)
+                                navController.navigate("detail")
+                            }
                         )
                     }
-                    else -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(24.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Button(onClick = { showCharacters = true }) {
-                                Text("Show Characters")
+
+                    composable("detail") {
+                        val selectedCharacter by viewModel.selectedCharacter.collectAsState()
+                        if (selectedCharacter != null) {
+                            CharacterDetailScreen(
+                                character = selectedCharacter!!,
+                                onBack = {
+                                    viewModel.clearSelectedCharacter()
+                                    navController.popBackStack()
+                                }
+                            )
+                        } else {
+                            // Auto pop back if character is null
+                            LaunchedEffect(Unit) {
+                                navController.popBackStack()
                             }
                         }
                     }
@@ -71,6 +86,21 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+@Composable
+fun HomeScreen(onShowCharacters: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Button(onClick = onShowCharacters) {
+            Text("Show Characters")
+        }
+    }
+}
+
 
 @Composable
 fun CharacterDetailScreen(character: Character, onBack: () -> Unit) {
