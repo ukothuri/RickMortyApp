@@ -10,16 +10,22 @@ import kotlinx.coroutines.launch
 
 class CharacterViewModel : ViewModel(){
     private val repository = CharacterRepository()
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
     private val _characters = MutableStateFlow<List<Character>>(emptyList())
     val characters: StateFlow<List<Character>> = _characters
 
-    init {
-     viewModelScope.launch {
-         try {
-             _characters.value = repository.fetchCharacters()
-         } catch ( e: Exception){
-             e.printStackTrace()
-         }
-     }
+    fun fetchCharacters() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val result = repository.fetchCharacters()
+                _characters.value = result
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 }
