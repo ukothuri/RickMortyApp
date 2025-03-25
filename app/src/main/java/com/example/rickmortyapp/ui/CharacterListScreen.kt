@@ -23,8 +23,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.rickmortyapp.data.model.Character
 import com.example.rickmortyapp.data.model.CharacterUiState
 import com.example.rickmortyapp.data.repository.MockCharacterRepositoryImpl
-import com.example.rickmortyapp
-    .viewmodel.CharacterViewModel
+import com.example.rickmortyapp.viewmodel.CharacterViewModel
 
 @Composable
 fun CharacterListScreen(
