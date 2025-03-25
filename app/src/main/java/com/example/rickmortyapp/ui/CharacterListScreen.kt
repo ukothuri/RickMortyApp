@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.example.rickmortyapp.data.model.Character
+import com.example.rickmortyapp.data.model.CharacterUiState
 import com.example.rickmortyapp.viewmodel.CharacterViewModel
 
 @Composable
@@ -33,26 +34,14 @@ fun CharacterListScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        when {
-            uiState.isLoading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-
-            uiState.errorMessage != null -> {
-                Text(
-                    text = uiState.errorMessage ?: "Error",
-                    modifier = Modifier.align(Alignment.Center),
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-
-            else -> {
-                LazyColumn {
-                    items(uiState.characters) { character ->
-                        CharacterItem(character = character, onClick = { onItemClick(character) })
-                    }
+        when (val state = uiState) {
+            is CharacterUiState.Loading -> CircularProgressIndicator()
+            is CharacterUiState.Success -> LazyColumn {
+                items(state.characters) { character ->
+                    CharacterItem(character = character, onClick = { onItemClick(character) })
                 }
             }
+            is CharacterUiState.Error -> Text("Error: ${state.message}")
         }
     }
 }

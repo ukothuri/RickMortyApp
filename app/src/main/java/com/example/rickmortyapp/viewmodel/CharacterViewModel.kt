@@ -9,34 +9,28 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class CharacterViewModel : ViewModel() {
+class CharacterViewModel( private val repository: CharacterRepository) : ViewModel() {
 
-    private val repository = CharacterRepository()
 
-    private val _uiState = MutableStateFlow(CharacterUiState())
-    val uiState: StateFlow<CharacterUiState> = _uiState
 
     private val _selectedCharacter = MutableStateFlow<Character?>(null)
     val selectedCharacter: StateFlow<Character?> = _selectedCharacter
 
+    private val _uiState = MutableStateFlow<CharacterUiState>(CharacterUiState.Loading)
+    val uiState: StateFlow<CharacterUiState> = _uiState
+
     fun fetchCharacters() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            _uiState.value = CharacterUiState.Loading
             try {
                 val result = repository.fetchCharacters()
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    characters = result,
-                    errorMessage = null
-                )
+                _uiState.value = CharacterUiState.Success(result)
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = e.message ?: "Unknown error"
-                )
+                _uiState.value = CharacterUiState.Error(e.message ?: "Unknown error")
             }
         }
     }
+
 
     fun selectCharacter(character: Character) {
         _selectedCharacter.value = character

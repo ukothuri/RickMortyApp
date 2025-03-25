@@ -1,7 +1,8 @@
 package com.example.rickmortyapp.data.model
 
-data class CharacterUiState(
-    val isLoading: Boolean = false,
-    val characters: List<Character> = emptyList(),
-    val errorMessage: String? = null
-)
+sealed class CharacterUiState {
+    object Loading : CharacterUiState()
+    data class Success(val characters: List<Character>) : CharacterUiState()
+    data class Error(val message: String) : CharacterUiState()
+}
+

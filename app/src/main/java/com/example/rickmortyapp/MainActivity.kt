@@ -17,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.rickmortyapp.data.model.Character
 import com.example.rickmortyapp.navigation.AppNavGraph
+import com.example.rickmortyapp.repository.CharacterRepositoryImpl
 import com.example.rickmortyapp.ui.theme.RickMortyAppTheme
 import com.example.rickmortyapp.viewmodel.CharacterViewModel
 
@@ -35,7 +37,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             RickMortyAppTheme {
                 val navController = rememberNavController()
-                val viewModel: CharacterViewModel = viewModel()
+
+                val viewModel = remember {
+                    CharacterViewModel(CharacterRepositoryImpl())
+                }
 
                 AppNavGraph(navController, viewModel)
             }
