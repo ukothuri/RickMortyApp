@@ -17,20 +17,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.rickmortyapp.data.model.Character
-import com.example.rickmortyapp.ui.CharacterListScreen
+import com.example.rickmortyapp.navigation.AppNavGraph
 import com.example.rickmortyapp.ui.theme.RickMortyAppTheme
 import com.example.rickmortyapp.viewmodel.CharacterViewModel
 
@@ -42,46 +37,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val viewModel: CharacterViewModel = viewModel()
 
-                NavHost(
-                    navController = navController,
-                    startDestination = "home"
-                ) {
-                    composable("home") {
-                        HomeScreen(
-                            onShowCharacters = {
-                                navController.navigate("list")
-                            }
-                        )
-                    }
-
-                    composable("list") {
-                        CharacterListScreen(
-                            viewModel = viewModel,
-                            onItemClick = { character ->
-                                viewModel.selectCharacter(character)
-                                navController.navigate("detail")
-                            }
-                        )
-                    }
-
-                    composable("detail") {
-                        val selectedCharacter by viewModel.selectedCharacter.collectAsState()
-                        if (selectedCharacter != null) {
-                            CharacterDetailScreen(
-                                character = selectedCharacter!!,
-                                onBack = {
-                                    viewModel.clearSelectedCharacter()
-                                    navController.popBackStack()
-                                }
-                            )
-                        } else {
-                            // Auto pop back if character is null
-                            LaunchedEffect(Unit) {
-                                navController.popBackStack()
-                            }
-                        }
-                    }
-                }
+                AppNavGraph(navController, viewModel)
             }
         }
     }

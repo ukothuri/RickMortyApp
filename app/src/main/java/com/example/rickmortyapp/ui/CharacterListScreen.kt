@@ -26,21 +26,31 @@ fun CharacterListScreen(
     viewModel: CharacterViewModel,
     onItemClick: (Character) -> Unit
 ) {
-    val characters by viewModel.characters.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
-    // ✅ Trigger once when Composable is first launched
     LaunchedEffect(Unit) {
         viewModel.fetchCharacters()
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        } else {
-            LazyColumn {
-                items(characters) { character ->
-                    CharacterItem(character = character, onClick = { onItemClick(character) })
+        when {
+            uiState.isLoading -> {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+
+            uiState.errorMessage != null -> {
+                Text(
+                    text = uiState.errorMessage ?: "Error",
+                    modifier = Modifier.align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
+            else -> {
+                LazyColumn {
+                    items(uiState.characters) { character ->
+                        CharacterItem(character = character, onClick = { onItemClick(character) })
+                    }
                 }
             }
         }
